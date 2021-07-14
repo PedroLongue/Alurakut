@@ -23,20 +23,41 @@ function ProfileSidebar (props) {
   );
 }
 
+function ProfileRelationsBox(props) {
+  return (
+    <ProfileRelationsBoxWrapper>
+      <h2 className="smallTitle">
+        {props.title} ({props.items.length})
+      </h2>
+    </ProfileRelationsBoxWrapper>
+  )
+}
+
 export default function Home() {
   const User = "PedroLongue";
+
   const [comunity, setComunity] = React.useState([{
     id: '213615616165416419646196415184',
     title: 'Eu odeio acordar cedo',
     image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
-  }
-  ]);
+  }]);
 
   const pessoasFavoritas = [
     'thiagobs1',
     'jessicadinizz', 
     'leticiabussinger'
   ]
+
+  const [seguidores, setSeguidores] = React.useState([]);
+  React.useEffect(function() {
+    fetch("https://api.github.com/users/PedroLongue/followers")
+    .then(function (respostaDoServidor) {
+      return respostaDoServidor.json();
+    })
+    .then(function(respostaCompleta) {
+      setSeguidores(respostaCompleta);
+    })
+  }, [])
 
   return (
     <div>
@@ -60,7 +81,7 @@ export default function Home() {
               const formData = new FormData(e.target);
               const Newcomunity = {
                 id: new Date(),
-                titulo: formData.get('title'),
+                title: formData.get('title'),
                 image: formData.get('image'),
               }
               const attComunity = [...comunity, Newcomunity];
@@ -91,6 +112,8 @@ export default function Home() {
           className="profileRelationsArea"
           style={{ gridArea: "profileRelationsArea" }}
         >
+          <ProfileRelationsBox title="Seguidores" items={seguidores}/>
+
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
               Comunidades ({comunity.length})
@@ -108,6 +131,7 @@ export default function Home() {
               })}
             </ul>
           </ProfileRelationsBoxWrapper>
+          
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
               Pessoas da comunidade ({pessoasFavoritas.length})
